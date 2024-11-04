@@ -6,14 +6,14 @@
     <title>Envoyer un Email</title>
 </head>
 <body>
+    <div id="position"></div> <!-- Div pour afficher les messages -->
     <script>
         let address = "";
-        reponse2 = getLocation();
+        getLocation();
         
-        // Fonction pour obtenir la géolocalisation de l'utilisateur
         function getLocation() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition);
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
             } else {
                 document.getElementById("position").innerHTML = "La géolocalisation n'est pas supportée par ce navigateur.";
             }
@@ -22,11 +22,8 @@
         function showPosition(position) {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
-            console.log(lat, lng);
-
             const accessKey = '557ad4a9c7953bfa58f59f0dc91ee77d';
 
-            // Utilisation de l'API PositionStack pour obtenir l'adresse exacte
             fetch(`https://api.positionstack.com/v1/reverse?access_key=${accessKey}&query=${lat},${lng}`)
                 .then(response => response.json())
                 .then(data => {
@@ -36,14 +33,10 @@
                         const subject = 'Géolocalisation';
                         const message = address;
 
-                        // Détection de l'environnement pour l'URL
                         const serverUrl = window.location.hostname === "localhost" 
                             ? "http://localhost:3000" 
-                            : "https://belimdel.github.io/project";  // Remplacer par l'URL publique du serveur
+                            : "https://belimdel.github.io/project";
 
-                        console.log('Données envoyées :', { to, subject, message });
-
-                        // Envoi de l'email via la requête POST
                         fetch(`${serverUrl}/send-email`, {
                             method: 'POST',
                             headers: {
@@ -58,18 +51,35 @@
                             return response.json();
                         })
                         .then(data => {
-                            console.log('Réponse JSON reçue :', data);
+                            document.getElementById("position").innerHTML = "Email envoyé avec succès.";
                         })
                         .catch(error => {
-                            console.error('Erreur lors de l\'envoi :', error);
+                            document.getElementById("position").innerHTML = "Erreur lors de l'envoi : " + error.message;
                         });
                     } else {
                         document.getElementById("position").innerHTML = "Impossible d'obtenir l'adresse.";
                     }
                 })
                 .catch(error => {
-                    console.error('Erreur lors de la requête :', error);
+                    document.getElementById("position").innerHTML = "Erreur lors de la requête : " + error.message;
                 });
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById("position").innerHTML = "L'utilisateur a refusé la demande de géolocalisation."
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById("position").innerHTML = "Les informations de localisation ne sont pas disponibles."
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById("position").innerHTML = "La demande de localisation a expiré."
+                    break;
+                case error.UNKNOWN_ERROR:
+                    document.getElementById("position").innerHTML = "Une erreur inconnue s'est produite."
+                    break;
+            }
         }
     </script>
 </body>
