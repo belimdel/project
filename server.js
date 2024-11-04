@@ -7,15 +7,19 @@ const app = express();
 const PORT = process.env.PORT || 3000;  // Le port est défini dynamiquement ou 3000 par défaut.
 
 // Middlewares
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+    origin: 'https://belimdel.github.io/project/'
+}));
 app.use(bodyParser.json());
 
-const corsOptions = {
-    origin: 'https://belimdel.github.io/project/',  // Remplace par ton domaine GitHub Pages
-    methods: ['GET', 'POST'],  // Méthodes autorisées
-    allowedHeaders: ['Content-Type'],  // Headers autorisés
-    optionsSuccessStatus: 200  // Pour compatibilité avec certains anciens navigateurs
-};
+
+// const corsOptions = {
+//     origin: 'https://belimdel.github.io/project/',  // Remplace par ton domaine GitHub Pages
+//     methods: ['GET', 'POST'],  // Méthodes autorisées
+//     allowedHeaders: ['Content-Type'],  // Headers autorisés
+//     optionsSuccessStatus: 200  // Pour compatibilité avec certains anciens navigateurs
+// };
 
 // Route pour envoyer un email
 app.post('/send-email', (req, res) => {
