@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;  // Le port est défini dynamiquement ou 
 // Middlewares
 // app.use(cors());
 app.use(cors({
-    origin: 'https://belimdel.github.io/project/'
+    origin: 'https://github.com/belimdel/project.git'
 }));
 app.use(bodyParser.json());
 
