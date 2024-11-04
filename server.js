@@ -11,7 +11,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const corsOptions = {
-    origin: 'https://belimdel.github.io',  // Remplace par ton domaine GitHub Pages
+    origin: 'https://belimdel.github.io/project/',  // Remplace par ton domaine GitHub Pages
     methods: ['GET', 'POST'],  // Méthodes autorisées
     allowedHeaders: ['Content-Type'],  // Headers autorisés
     optionsSuccessStatus: 200  // Pour compatibilité avec certains anciens navigateurs
